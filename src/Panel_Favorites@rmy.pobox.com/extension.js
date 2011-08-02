@@ -1,13 +1,15 @@
-// Copyright (C) 2011 R M Yorston
-// Licence: GPLv2+
-
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
 
+const Gettext = imports.gettext.domain('gnome-shell');
+const _ = Gettext.gettext;
+
 const AppFavorites = imports.ui.appFavorites;
 const Main = imports.ui.main;
+
+const OVERVIEW_BUTTON_ICON_SIZE = 22;
 
 function PanelLauncher(app) {
     this._init(app);
@@ -28,6 +30,30 @@ PanelLauncher.prototype = {
         this._app = app;
         this.actor.connect('clicked', Lang.bind(this, function() {
             this._app.open_new_window(-1);
+        }));
+    }
+};
+
+function OverviewLauncher() {
+    this._init();
+}
+
+OverviewLauncher.prototype = {
+    _init: function() {
+        this.actor = new St.Button({ name: 'panelLauncher',
+                                    reactive: true });        
+        this._icon = new St.Icon({
+            icon_name: 'desktop',
+            icon_type: St.IconType.FULLCOLOR,
+            icon_size: OVERVIEW_BUTTON_ICON_SIZE,
+            style_class: 'system-status-icon'
+        });
+        
+        this.actor.set_child(this._icon);
+        this.actor.set_tooltip_text(_('Overview'));
+        
+        this.actor.connect('clicked', Lang.bind(this, function() {
+            Main.overview.toggle();
         }));
     }
 };
@@ -63,6 +89,10 @@ PanelFavorites.prototype = {
         let launchers = shellSettings.get_strv('favorite-apps');
 
         this._buttons = [];
+        
+        this._buttons.push(new OverviewLauncher());
+        this.actor.add(this._buttons[0].actor);
+        
         let j = 0;
         for ( let i=0; i<launchers.length; ++i ) {
             let app = Shell.AppSystem.get_default().get_app(launchers[i]);
