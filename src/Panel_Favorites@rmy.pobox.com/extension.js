@@ -1,3 +1,6 @@
+// Copyright (C) 2011 R M Yorston
+// Licence: GPLv2+
+
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 const Shell = imports.gi.Shell;
@@ -43,14 +46,16 @@ OverviewLauncher.prototype = {
         this.actor = new St.Button({ name: 'panelLauncher',
                                     reactive: true });        
         this._icon = new St.Icon({
-            icon_name: 'desktop',
+            icon_name: 'view-fullscreen',
             icon_type: St.IconType.FULLCOLOR,
             icon_size: OVERVIEW_BUTTON_ICON_SIZE,
             style_class: 'system-status-icon'
         });
         
         this.actor.set_child(this._icon);
-        this.actor.set_tooltip_text(_('Overview'));
+        
+        let text = 'Vistazo\nVista general del espacio de trabajo.'
+        this.actor.set_tooltip_text(text);
         
         this.actor.connect('clicked', Lang.bind(this, function() {
             Main.overview.toggle();
@@ -67,6 +72,7 @@ PanelFavorites.prototype = {
         this._path = path;
         this.actor = new St.BoxLayout({ name: 'panelFavorites',
                                          style_class: 'panel-favorites' });
+        
         this._display();
 
         Shell.AppSystem.get_default().connect('installed-changed', Lang.bind(this, this._redisplay));
@@ -93,7 +99,7 @@ PanelFavorites.prototype = {
         this._buttons.push(new OverviewLauncher());
         this.actor.add(this._buttons[0].actor);
         
-        let j = 0;
+        let j = 1;
         for ( let i=0; i<launchers.length; ++i ) {
             let app = Shell.AppSystem.get_default().get_app(launchers[i]);
 
@@ -112,12 +118,7 @@ PanelFavorites.prototype = {
         let dir = Gio.file_new_for_path(this._path);
         let stylesheetFile = dir.get_child('stylesheet.css');
         if (stylesheetFile.query_exists(null)) {
-            try {
-                theme.load_stylesheet(stylesheetFile.get_path());
-            } catch (e) {
-                global.logError(baseErrorString + 'Stylesheet parse error: ' + e);
-                return;
-            }
+            theme.load_stylesheet(stylesheetFile.get_path());
         }
     }
 };
