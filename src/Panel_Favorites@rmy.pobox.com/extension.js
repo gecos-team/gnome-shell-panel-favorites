@@ -6,13 +6,16 @@ const Lang = imports.lang;
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;
 
-const Gettext = imports.gettext.domain('gnome-shell');
-const _ = Gettext.gettext;
+const Gettext = imports.gettext;
+const _ = Gettext.domain('gnome-shell').gettext;
 
 const AppFavorites = imports.ui.appFavorites;
 const Main = imports.ui.main;
 
 const OVERVIEW_BUTTON_ICON_SIZE = 22;
+
+
+let _f = null;
 
 function PanelLauncher(app) {
     this._init(app);
@@ -54,7 +57,7 @@ OverviewLauncher.prototype = {
         
         this.actor.set_child(this._icon);
         
-        let text = 'Vistazo\nVista general del espacio de trabajo.'
+        let text = _f('Overview') + '\n' + _f('Overview workspace.');
         this.actor.set_tooltip_text(text);
         
         this.actor.connect('clicked', Lang.bind(this, function() {
@@ -124,6 +127,11 @@ PanelFavorites.prototype = {
 };
 
 function main(extensionMeta) {
+    
+    let localePath = extensionMeta.path + '/locale';
+    Gettext.bindtextdomain('panel-favorites', localePath);
+    _f = Gettext.domain('panel-favorites').gettext;
+    
     let panelFavorites = new PanelFavorites(extensionMeta.path);
     Main.panel._leftBox.insert_actor(panelFavorites.actor, 1);
 }
