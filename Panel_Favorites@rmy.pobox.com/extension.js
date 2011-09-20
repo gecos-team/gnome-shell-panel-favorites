@@ -17,6 +17,18 @@ const OVERVIEW_BUTTON_ICON_SIZE = 22;
 
 let _f = null;
 
+
+/**
+ * Get an ApplicationInfo object.
+ * The AppSystem API was changed in GnomeShell 3.1.90.1
+ */
+function lookupApp(appId) {
+    if (Shell.AppSystem.get_default().lookup_app)
+        return Shell.AppSystem.get_default().lookup_app(appId);
+    else
+        return Shell.AppSystem.get_default().get_app(appId);
+}
+
 function PanelLauncher(app) {
     this._init(app);
 }
@@ -104,7 +116,7 @@ PanelFavorites.prototype = {
         
         let j = 1;
         for ( let i=0; i<launchers.length; ++i ) {
-            let app = Shell.AppSystem.get_default().get_app(launchers[i]);
+            let app = lookupApp(launchers[i]);
 
             if ( app == null ) {
                 continue;
