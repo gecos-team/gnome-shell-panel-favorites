@@ -126,12 +126,22 @@ PanelFavorites.prototype = {
     }
 };
 
-function main(extensionMeta) {
+function main(meta) {
     
-    let localePath = extensionMeta.path + '/locale';
+    let localePath = meta.path + '/locale';
     Gettext.bindtextdomain('panel-favorites', localePath);
     _f = Gettext.domain('panel-favorites').gettext;
     
-    let panelFavorites = new PanelFavorites(extensionMeta.path);
+    let panelFavorites = new PanelFavorites(meta.path);
     Main.panel._leftBox.insert_actor(panelFavorites.actor, 1);
+}
+
+function init(meta) {
+    main(meta);
+}
+
+function enable() {
+}
+
+function disable() {
 }
