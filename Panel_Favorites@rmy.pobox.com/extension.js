@@ -59,19 +59,19 @@ function OverviewLauncher() {
 OverviewLauncher.prototype = {
     _init: function() {
         this.actor = new St.Button({ name: 'panelLauncher',
-                                    reactive: true });        
+                                    reactive: true });
         this._icon = new St.Icon({
             icon_name: 'view-fullscreen',
             icon_type: St.IconType.FULLCOLOR,
             icon_size: OVERVIEW_BUTTON_ICON_SIZE,
             style_class: 'system-status-icon'
         });
-        
+
         this.actor.set_child(this._icon);
-        
+
         let text = _f('Overview') + '\n' + _f('Overview workspace.');
         this.actor.set_tooltip_text(text);
-        
+
         this.actor.connect('clicked', Lang.bind(this, function() {
             Main.overview.toggle();
         }));
@@ -87,7 +87,7 @@ PanelFavorites.prototype = {
         this._path = path;
         this.actor = new St.BoxLayout({ name: 'panelFavorites',
                                          style_class: 'panel-favorites' });
-        
+
         this._display();
 
         Shell.AppSystem.get_default().connect('installed-changed', Lang.bind(this, this._redisplay));
@@ -110,10 +110,10 @@ PanelFavorites.prototype = {
         let launchers = shellSettings.get_strv('favorite-apps');
 
         this._buttons = [];
-        
+
         this._buttons.push(new OverviewLauncher());
         this.actor.add(this._buttons[0].actor);
-        
+
         let j = 1;
         for ( let i=0; i<launchers.length; ++i ) {
             let app = lookupApp(launchers[i]);
@@ -139,11 +139,11 @@ PanelFavorites.prototype = {
 };
 
 function main(meta) {
-    
+
     let localePath = meta.path + '/locale';
     Gettext.bindtextdomain('panel-favorites', localePath);
     _f = Gettext.domain('panel-favorites').gettext;
-    
+
     let panelFavorites = new PanelFavorites(meta.path);
     Main.panel._leftBox.insert_actor(panelFavorites.actor, 1);
 }
